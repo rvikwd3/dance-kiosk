@@ -4,11 +4,12 @@
   "description": "A kiosk for City Dance Studios",
   "main": "index.js",
   "scripts": {
-    "build": "vite build",
+    "build": "turbo build",
+    "dev": "turbo dev",
     "check-types": "tsc --noEmit"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ravikiran Kawade",
   "license": "ISC",
   "packageManager": "pnpm@10.12.2",
   "devDependencies": {
