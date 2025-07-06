@@ -1,0 +1,48 @@
+{{
+    const utils = require('./utils.js');
+    // console.log("Utils loaded successfully");
+
+    today = utils.date.timestampToLocalISO(utils.date.getStartOfToday());
+    tomorrow = utils.date.timestampToLocalISO(utils.date.getEndOfTomorrow());
+
+    todayDate = utils.date.extractDateFromISO(utils.date.timestampToLocalISO(utils.date.getStartOfToday()));
+    tomorrowDate = utils.date.extractDateFromISO(utils.date.timestampToLocalISO(utils.date.getEndOfTomorrow()));
+
+    exports.tomorrowStart = utils.date.timestampToLocalISO(utils.date.getStartOfTomorrow());
+    exports.today = today;
+    exports.tomorrow = tomorrow;
+    exports.todayDate = todayDate;
+    exports.tomorrowDate = tomorrowDate;
+    
+    // Debug each step of the dayAfterTomorrowDate calculation
+    console.log("=== Debugging dayAfterTomorrowDate calculation ===");
+    
+    const step1 = utils.date.getEndOfTomorrow();
+    console.log("Step 1 - getEndOfTomorrow():", step1, "(timestamp)");
+    
+    const step2 = utils.date.addDays(step1, 1);
+    console.log("Step 2 - addDays(step1, 1):", step2, "(Date object)");
+    console.log("Type of step2:", typeof step2);
+    
+    const step3 = utils.date.timestampToLocalISO(step2);
+    console.log("Step 3 - timestampToLocalISO(step2):", step3, "(ISO string)");
+    
+    const step4 = utils.date.extractDateFromISO(step3);
+    console.log("Step 4 - extractDateFromISO(step3):", step4, "(date string)");
+    
+    exports.dayAfterTomorrowDate = step4;
+    console.log("Final result - dayAfterTomorrowDate:", exports.dayAfterTomorrowDate);
+    console.log("=== End debugging ===");
+}}
+
+###
+
+# @no-cookie-jar
+GET {{API_BASE_URL}}/availability/classes?minDate={{today}}&maxDate={{tomorrow}}&timezone=America/Los_Angeles
+Authorization: Basic {{API_USER_ID}}:{{API_KEY}}
+
+###
+
+# @no-cookie-jar
+GET {{API_BASE_URL}}/availability/classes?minDate=2025-06-25&maxDate=2025-06-26&timezone=America/Los_Angeles
+Authorization: Basic {{API_USER_ID}}:{{API_KEY}}

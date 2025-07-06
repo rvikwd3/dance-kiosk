@@ -1,0 +1,6 @@
+{{
+    exports.query = 'a';
+}}
+
+GET {{API_BASE_URL}}/clients?search={{query}}
+Authorization: Basic {{API_USER_ID}}:{{API_KEY}}

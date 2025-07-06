@@ -6,6 +6,8 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "build:prod": "turbo build:prod",
+    "start:prod": "turbo start:prod",
     "check-types": "tsc --noEmit"
   },
   "keywords": [],

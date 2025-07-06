@@ -1,0 +1,2 @@
+GET {{API_BASE_URL}}/appointments/95993030
+Authorization: Basic {{API_USER_ID}}:{{API_KEY}}

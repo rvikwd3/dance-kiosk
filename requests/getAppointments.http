@@ -1,0 +1,14 @@
+{{
+    const utils = require('./utils.js');
+    console.log("Utils loaded successfully");
+
+    var thirtyMinutesAgo = utils.date.timestampToLocalISO(utils.date.getThirtyMinutesAgo())
+    var endOfToday = utils.date.timestampToLocalISO(utils.date.getEndOfToday())
+
+    exports.thirtyMinutesAgo = thirtyMinutesAgo;
+    exports.endOfToday = endOfToday;
+}}
+
+# @no-cookie-jar
+GET {{API_BASE_URL}}/appointments?max=100&minDate={{thirtyMinutesAgo}}&maxDate={{endOfToday}}
+Authorization: Basic {{API_USER_ID}}:{{API_KEY}}

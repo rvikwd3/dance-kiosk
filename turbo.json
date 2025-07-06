@@ -10,6 +10,19 @@
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "build:prod": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV=production"]
+    },
+    "start:prod": {
+      "dependsOn": ["^build:prod"],
+      "env": ["NODE_ENV=production"]
+    },
+    "dev:all": {
+      "persistent": true,
+      "cache": false
     }
   }
 }
