@@ -1,10 +1,11 @@
 // apps/api-server/src/services/external-api.ts
 import { getToday, getTomorrow } from '@citydance/utils';
+import { env } from '../env.js';
 
 export class ExternalApiService {
-  private baseUrl = process.env.API_BASE_URL;
-  private apiUser = process.env.API_USER; // Secret - only on server
-  private apiKey = process.env.API_KEY;   // Secret - only on server
+  private baseUrl = env.API_BASE_URL;
+  private apiUser = env.API_USER_ID; // Secret - only on server
+  private apiKey = env.API_KEY;   // Secret - only on server
 
   async fetchClasses(minDate?: string, maxDate?: string) {
     // Create Basic auth header using API_USER:API_KEY format

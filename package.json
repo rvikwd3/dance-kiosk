@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "Ravikiran Kawade",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.2",
+  "packageManager": "pnpm@10.12.4",
   "devDependencies": {
     "turbo": "^2.5.4"
   }

@@ -1,19 +1,11 @@
 // apps/api-server/src/index.ts
+import './env.js'; // Load environment variables first
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
 import { externalApiService } from './services/external-api.js';
+import { env } from './env.js';
 
-const envFile = process.env.NODE_ENV === 'production' 
-  ? 'env/.env.production' 
-  : 'env/.env.development';
-
-const PORT = process.env.PORT || 3001;
-
-dotenv.config({
-  path: path.resolve(process.cwd(), envFile),
-});
+const PORT = env.PORT;
 
 const app = express();
 
@@ -40,7 +32,9 @@ app.get('/api/getClasses', async (req, res) => {
     const data = await externalApiService.fetchClasses();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch data' });
+    res.status(500).json({
+      error: 'Failed to fetch data'
+    });
   }
 });
 
