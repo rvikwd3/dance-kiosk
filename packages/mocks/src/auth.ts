@@ -1,4 +1,5 @@
 import { env } from './env.js';
+import { AuthCredentials } from '@dance-kiosk/types';
 
 export function validateBasicAuth(authHeader: string | null): boolean {
   if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -15,4 +16,8 @@ export function validateBasicAuth(authHeader: string | null): boolean {
 export function createBasicAuthHeader(userId: string, apiKey: string): string {
   const credentials = Buffer.from(`${userId}:${apiKey}`).toString('base64');
   return `Basic ${credentials}`;
+}
+
+export function createBasicAuthHeaderFromCredentials(credentials: AuthCredentials): string {
+  return createBasicAuthHeader(credentials.username, credentials.password);
 }

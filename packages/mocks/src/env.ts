@@ -7,7 +7,7 @@ import path from 'path';
 const envFile = '.env.development';
 
 // Path to workspace root (2 levels up from packages/mocks/src)
-const workspaceRoot = path.resolve(process.cwd(), '../../..');
+const workspaceRoot = path.resolve(process.cwd(), '../..');
 const envFilePath = path.resolve(workspaceRoot, envFile);
 
 console.log(`[Mocks] Loading environment from: ${envFile}`);
@@ -17,6 +17,8 @@ console.log(`[Mocks] Note: Mocks package only uses development environment`);
 dotenv.config({
   path: envFilePath,
 });
+
+console.log('[Mocks] After dotenv.config, API_BASE_URL:', process.env.API_BASE_URL);
 
 // Export environment variables for use in other modules
 export const env = {

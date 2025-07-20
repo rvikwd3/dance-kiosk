@@ -7,10 +7,14 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
-    "test": "tsx test/auth-test.ts",
-    "clean": "rm -rf dist"
+    "test": "pnpm build && pnpm test:endpoints",
+    "test:endpoints": "tsx tests/endpoints.test.ts",
+    "test:build": "tsc -p tsconfig.test.json",
+    "clean": "powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }; if (Test-Path dist-tests) { Remove-Item -Recurse -Force dist-tests }\""
   },
   "dependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@dance-kiosk/types": "workspace:*",
     "dotenv": "^17.0.0",
     "msw": "^2.0.0"
   },

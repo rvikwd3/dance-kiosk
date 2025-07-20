@@ -8,7 +8,7 @@ const envFile = process.env.NODE_ENV === 'production'
   : '.env.development';
 
 // Path to workspace root (2 levels up from apps/api-server/src)
-const workspaceRoot = path.resolve(process.cwd(), '../../..');
+const workspaceRoot = path.resolve(process.cwd(), '../..');
 const envFilePath = path.resolve(workspaceRoot, envFile);
 
 console.log(`Loading environment from: ${envFile}`);

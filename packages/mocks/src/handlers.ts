@@ -2,6 +2,13 @@ import { http, HttpResponse } from 'msw';
 import { validateBasicAuth } from './auth';
 import { dataLoader } from './data-loader';
 import { env } from './env';
+import { 
+  GetClassesResponse, 
+  GetClassesParams, 
+  ApiErrorResponse, 
+  HealthCheckResponse,
+  ApiResponse 
+} from '@dance-kiosk/types';
 
 // Get the base URL from environment
 const API_BASE_URL = env.API_BASE_URL;
@@ -12,27 +19,23 @@ console.log(`[Mocks] Using API_BASE_URL: ${API_BASE_URL}`);
 // Helper function to validate Basic auth and return error response if invalid
 const validateAuthAndGetError = (authHeader: string | null) => {
   if (!validateBasicAuth(authHeader)) {
-    return HttpResponse.json(
-      { 
-        error: 'Unauthorized', 
-        message: 'Invalid or missing Basic authentication credentials' 
-      },
-      { status: 401 }
-    );
+    const errorResponse: ApiErrorResponse = {
+      error: 'Unauthorized', 
+      message: 'Invalid or missing Basic authentication credentials' 
+    };
+    return HttpResponse.json(errorResponse, { status: 401 });
   }
   return null; // No error, auth is valid
 };
 
 // Helper function to create error response
 const createErrorResponse = (status: number, error: string, message: string, additionalData?: any) => {
-  return HttpResponse.json(
-    { 
-      error, 
-      message,
-      ...additionalData
-    },
-    { status }
-  );
+  const errorResponse: ApiErrorResponse = {
+    error, 
+    message,
+    ...additionalData
+  };
+  return HttpResponse.json(errorResponse, { status });
 };
 
 // Helper function to create success response with metadata
@@ -40,8 +43,8 @@ const createSuccessResponse = (data: any, endpoint?: string) => {
   const now = new Date();
   const formattedTimestamp = now.toISOString().replace(/[:.]/g, '_').slice(0, -5); // YYYY-MM-DDTHH_MM_SS format
   
-  const response = {
-    ...data,
+  const response: ApiResponse = {
+    data,
     timestamp: now.toISOString(),
     requestId: `req_${formattedTimestamp}_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
     ...(endpoint && { _meta: { endpoint, mockData: true } })
@@ -51,59 +54,97 @@ const createSuccessResponse = (data: any, endpoint?: string) => {
 
 export const handlers = [
   // Main handler for /api/getClasses
-  http.get(`${API_BASE_URL}/api/getClasses`, ({ request }) => {
+  http.get(`${API_BASE_URL}/availability/classes`, ({ request }) => {
     const authHeader = request.headers.get('Authorization');
     
     // Validate Basic authentication
     const authError = validateAuthAndGetError(authHeader);
     if (authError) return authError;
 
+    // Parse query parameters
+    const url = new URL(request.url);
+    const minDate = url.searchParams.get('minDate');
+    const maxDate = url.searchParams.get('maxDate');
+
+    console.log(`minDate: ${minDate}\nmaxDate: ${maxDate}`)
+
+    const timezone = url.searchParams.get('timezone');
+
     try {
       // Load dynamic JSON data for this endpoint
-      const classesData = dataLoader.loadDataForEndpoint('/api/getClasses');
-      return createSuccessResponse(classesData);
+      let classesData = dataLoader.loadDataForEndpoint('/api/getClasses');
+
+      // If mock data is an array and minDate/maxDate are provided, filter by date if possible
+      if (Array.isArray(classesData)) {
+        // Try to filter by date if items have a 'date' property
+        if (minDate || maxDate) {
+          classesData = classesData.filter((item) => {
+            if (!item.time) return true;
+            const itemDate = new Date(item.time);
+            if (minDate && itemDate < new Date(minDate)) return false;
+            if (maxDate && itemDate > new Date(maxDate)) return false;
+            return true;
+          });
+        }
+      }
+
+      // Create properly typed response
+      const params: GetClassesParams = { 
+        minDate: minDate || undefined, 
+        maxDate: maxDate || undefined, 
+        timezone: timezone || undefined 
+      };
+      const response: GetClassesResponse = {
+        data: classesData,
+        timestamp: new Date().toISOString(),
+        requestId: `req_${Date.now()}_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        params,
+        _meta: { endpoint: '/api/getClasses', mockData: true }
+      };
+      return HttpResponse.json(response);
     } catch (error) {
       console.error('Error loading mock data:', error);
       return createErrorResponse(500, 'Internal Server Error', 'Failed to load mock data');
     }
   }),
 
-  // Generic handler for any /api/* endpoint with Basic auth
-  http.get(`${API_BASE_URL}/api/*`, ({ request }) => {
-    const authHeader = request.headers.get('Authorization');
+  // // Generic handler for any /api/* endpoint with Basic auth
+  // http.get(`${API_BASE_URL}/api/*`, ({ request }) => {
+  //   const authHeader = request.headers.get('Authorization');
     
-    // Validate Basic authentication
-    const authError = validateAuthAndGetError(authHeader);
-    if (authError) return authError;
+  //   // Validate Basic authentication
+  //   const authError = validateAuthAndGetError(authHeader);
+  //   if (authError) return authError;
 
-    const url = new URL(request.url);
-    const endpoint = url.pathname;
+  //   const url = new URL(request.url);
+  //   const endpoint = url.pathname;
     
-    try {
-      // Check if we have mock data for this endpoint
-      if (!dataLoader.hasDataForEndpoint(endpoint)) {
-        return createErrorResponse(
-          404, 
-          'Not Found', 
-          `No mock data available for ${endpoint}`,
-          { availableEndpoints: dataLoader.getAvailableEndpoints() }
-        );
-      }
+  //   try {
+  //     // Check if we have mock data for this endpoint
+  //     if (!dataLoader.hasDataForEndpoint(endpoint)) {
+  //       return createErrorResponse(
+  //         404, 
+  //         'Not Found', 
+  //         `No mock data available for ${endpoint}`,
+  //         { availableEndpoints: dataLoader.getAvailableEndpoints() }
+  //       );
+  //     }
       
-      const data = dataLoader.loadDataForEndpoint(endpoint);
-      return createSuccessResponse(data, endpoint);
-    } catch (error) {
-      console.error(`Error loading mock data for ${endpoint}:`, error);
-      return createErrorResponse(500, 'Internal Server Error', 'Failed to load mock data');
-    }
-  }),
+  //     const data = dataLoader.loadDataForEndpoint(endpoint);
+  //     return createSuccessResponse(data, endpoint);
+  //   } catch (error) {
+  //     console.error(`Error loading mock data for ${endpoint}:`, error);
+  //     return createErrorResponse(500, 'Internal Server Error', 'Failed to load mock data');
+  //   }
+  // }),
 
   // Health check endpoint (no auth required)
   http.get(`${API_BASE_URL}/health`, () => {
-    return HttpResponse.json({
+    const healthResponse: HealthCheckResponse = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       mockServer: true
-    });
+    };
+    return HttpResponse.json(healthResponse);
   })
 ];

@@ -9,6 +9,7 @@
     "dev": "tsc --watch"
   },
   "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {

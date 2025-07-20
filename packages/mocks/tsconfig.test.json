@@ -1,0 +1,12 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist-tests",
+    "rootDir": ".",
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "node"
+  },
+  "include": ["tests/**/*"],
+  "exclude": ["node_modules", "dist", "dist-tests"]
+} 

@@ -9,7 +9,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@citydance/utils": "workspace:*"
+    "@citydance/utils": "workspace:*",
+    "@repo/typescript-config": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

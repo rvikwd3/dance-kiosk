@@ -44,5 +44,5 @@ Authorization: Basic {{API_USER_ID}}:{{API_KEY}}
 ###
 
 # @no-cookie-jar
-GET {{API_BASE_URL}}/availability/classes?minDate=2025-06-25&maxDate=2025-06-26&timezone=America/Los_Angeles
+GET {{API_BASE_URL}}/availability/classes?minDate=2025-07-19&maxDate=2025-07-20&timezone=America/Los_Angeles
 Authorization: Basic {{API_USER_ID}}:{{API_KEY}}
